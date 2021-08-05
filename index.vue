@@ -163,33 +163,84 @@ export default {
     name: "Music",
     data() {
         return {
-            data: {},
-            playIng: false,
-            isPlayer: false,
-            isPause: false,
+            // 默认数据
+            data: [
+                {
+                    picurl: "http://p2.music.126.net/4RykM52XvUd5avvhbzFFKA==/109951166031360436.jpg", // 背景图片
+                    name: "高考那个夏天", // 名称
+                    text: "....", // 说明
+                    artistsname: "高宇Slient", // 作者
+                    url: "http://music.163.com/song/media/outer/url?id=1832399395", // 媒体文件地址
+                },
+                {
+                    picurl: "http://p1.music.126.net/L-6FYIDjMmrrOI-a_hT8CQ==/109951165554944740.jpg", // 背景图片
+                    name: "爱人错过", // 名称
+                    text: "....", // 说明
+                    artistsname: "初月", // 作者
+                    url: "http://music.163.com/song/media/outer/url?id=1815759242", // 媒体文件地址
+                },
+                {
+                    picurl: "http://p2.music.126.net/qn7Fq7mDk-ADKV4-CfHRpw==/109951165642867823.jpg", // 背景图片
+                    name: "《凄》", // 名称
+                    text: "....", // 说明
+                    artistsname: "527", // 作者
+                    url: "http://music.163.com/song/media/outer/url?id=1813388659", // 媒体文件地址
+                },
+                {
+                    picurl: "http://p2.music.126.net/dW3bq2cQcWu-5ADXWHEWAA==/109951165423355433.jpg", // 背景图片
+                    name: "If", // 名称
+                    text: "....", // 说明
+                    artistsname: "七元", // 作者
+                    url: "http://music.163.com/song/media/outer/url?id=1406665350", // 媒体文件地址
+                },
+                {
+                    picurl: "http://p2.music.126.net/ZWp23Ah6BnZLxDQZ804zAQ==/109951166163095619.jpg", // 背景图片
+                    name: "千年の恋", // 名称
+                    text: "....", // 说明
+                    artistsname: "芝麻Mochi", // 作者
+                    url: "http://music.163.com/song/media/outer/url?id=1859954221", // 媒体文件地址
+                },
+            ],
+            // 播放中数据
+            playerIng: {
+                picurl: "http://p3.music.126.net/uGhXUa8-QfqCiYhw3_xHpg==/109951165762718245.jpg", // 背景图片
+                name: "狮子座", // 名称
+                text: "....", // 说明
+                artistsname: "高宇Slient", // 作者
+                url: "http://music.163.com/song/media/outer/url?id=1823333143", // 媒体文件地址
+            },
+            isPlayer: false, // 是否播放中
+            Process_Now: null, // 播放进度
+            volumes: 40, // 音量
+            type: 1, // 1：顺序播放，2：随机播放，3：单曲循环
         };
     },
     mounted() {
         this.getMusic();
     },
     methods: {
+        // 这里获取数据
         getMusic() {
-            this.$api.external.getMusic({ id: 3123196424 }).then((res) => {
-                this.data = res.data.data;
-                let s = document.createElement("style");
-                s.innerText =
-                    ".content::after{background: url(" +
-                    this.data.picurl +
-                    ");}";
-                document.body.appendChild(s);
-            });
+            // 设置默认声音大小
+            var aud = this.$refs.audio;
+            aud.volume = Number(this.volumes) / 100;
+            // example
+            // this.$http.get({}).then((res) => {
+            // this.data = res;
+            // 插入背景图片
+            this.changeBg();
+            // });
         },
+        // 播放 / 暂停
         player() {
-            this.isPlayer = !this.isPlayer;
+            this.isPlayer = !this.isPlayer; // 改变播放状态同时改变播放 / 暂停 图标
+            var aud = this.$refs.audio; // 获取 audio 实例
             if (this.isPlayer) {
-                this.$refs.audio.play();
+                aud.play(); // 播放
+                this.TimeSpan(); // 定时器 主要用于播放进度
             } else {
-                this.$refs.audio.pause();
+                aud.pause(); // 暂停
+                clearInterval(time); // 清除定时器
             }
         },
     },
